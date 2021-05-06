@@ -10,7 +10,7 @@ Class constructor($windowRef : Integer; $pdfPath : Text; $trace : Boolean)
 	This:C1470.autoQuit:=False:C215
 	// When you use a timer, the timeout must be bigger that the timer
 	This:C1470.timer:=60
-	This:C1470.timeout:=This:C1470.timer*3
+	This:C1470.timeout:=This:C1470.timer*3  //miyako:make it easier to adjust the imer
 	This:C1470.isWaiting:=False:C215
 	
 	CALL FORM:C1391(This:C1470.windowRef; "ProgressBarAdvancement"; 0; "Initializing custom functions")
@@ -33,29 +33,22 @@ Function onEvent
 			// Starts a timer to verify if all calculations are finished.
 			// If during this period the "On VP Range Changed" is thrown, the timer will be restarted
 			// The time must be defined according to the computer configuration.
-			//SET TIMER(This.timer)
-			SET TIMER:C645(0)
+			SET TIMER:C645(This:C1470.timer)
 			
 		: (FORM Event:C1606.code=On VP Range Changed:K2:61)
 			// End of calculation detected. Restarts the timer 
 			If (This:C1470.isWaiting)
-				SET TIMER:C645(0)
+				SET TIMER:C645(This:C1470.timer)
 			End if 
 			
 		: (FORM Event:C1606.code=On Timer:K2:25)
 			// To be sure to not restart the timer because the VP commands used after could throw the "On VP Range Changed" event again
 			
-			// can not stop the timer, so make it really long
-			SET TIMER:C645(30000)
+			SET TIMER:C645(30000)  // miyako:can not stop the timer with SET TIMER(0), so make it really long
 			
-			If (This:C1470.isWaiting)
+			If (This:C1470.isWaiting)  //miyako:avoid double jeopardy
 				
 				This:C1470.isWaiting:=False:C215
-				
-				ARRAY LONGINT:C221($events; 2)
-				$events{1}:=On Timer:K2:25
-				$events{2}:=On VP Range Changed:K2:61
-				OBJECT SET EVENTS:C1239(*; This:C1470.area; $events; Disable events others unchanged:K42:39)
 				
 				// Defines the options of the pdf document
 				var $printInfo : Object
@@ -71,7 +64,7 @@ Function onEvent
 				VP EXPORT DOCUMENT(This:C1470.area; This:C1470.pdfPath; New object:C1471("formula"; Formula:C1597(PDFCallback); "windowRef"; This:C1470.windowRef))
 				
 			Else 
-				TRACE:C157  //what am I doing here!?
+				TRACE:C157  //miyako:something is wrong
 			End if 
 			
 		: (FORM Event:C1606.code=On URL Loading Error:K2:48)
