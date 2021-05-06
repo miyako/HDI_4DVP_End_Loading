@@ -10,7 +10,7 @@ Class constructor($windowRef : Integer; $pdfPath : Text; $trace : Boolean)
 	This:C1470.autoQuit:=False:C215
 	// When you use a timer, the timeout must be bigger that the timer
 	This:C1470.timer:=60
-	This:C1470.timeout:=This:C1470.timer*3  //miyako:make it easier to adjust the imer
+	This:C1470.timeout:=This:C1470.timer*2  //miyako:make it easier to adjust the timer
 	This:C1470.isWaiting:=False:C215
 	
 	CALL FORM:C1391(This:C1470.windowRef; "ProgressBarAdvancement"; 0; "Initializing custom functions")
